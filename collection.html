@@ -34,19 +34,58 @@
     <main class="container">
       <section class="page-head">
         <h1>Toute la collection</h1>
-        <p>Filtre rapide par type, métal et couleur pour une navigation fluide.</p>
       </section>
 
-      <section class="filter-strip">
-        <label><span>Type</span><select id="typeSelect"></select></label>
-        <label><span>Métal</span><select id="metalSelect"></select></label>
-        <label><span>Couleur</span><select id="colorSelect"></select></label>
-        <label><span>Recherche</span><input id="searchInput" type="search" placeholder="Code, SKU, nom..." /></label>
-        <button id="resetFiltersBtn" class="btn" type="button">Réinitialiser</button>
-      </section>
+      <section class="collection-layout">
+        <aside class="advanced-filters">
+          <details>
+            <summary>Disponibilite</summary>
+            <div class="filter-body">
+              <label class="check-row">
+                <input id="inStockOnly" type="checkbox" />
+                <span>En stock uniquement</span>
+              </label>
+            </div>
+          </details>
 
-      <div id="activeFilters" class="active-filters"></div>
-      <div id="collectionGrid" class="products-grid"></div>
+          <details>
+            <summary>Prix</summary>
+            <div class="filter-body">
+              <div class="price-fields">
+                <label>
+                  <span>Min</span>
+                  <input id="priceMinInput" type="number" min="0" step="1" />
+                </label>
+                <label>
+                  <span>Max</span>
+                  <input id="priceMaxInput" type="number" min="0" step="1" />
+                </label>
+              </div>
+            </div>
+          </details>
+
+          <details>
+            <summary>Metal</summary>
+            <div class="filter-body">
+              <select id="metalSelect"></select>
+            </div>
+          </details>
+
+          <details>
+            <summary>Couleur</summary>
+            <div class="filter-body">
+              <select id="colorSelect"></select>
+            </div>
+          </details>
+
+          <button id="resetFiltersBtn" class="btn reset-filters-btn" type="button">Réinitialiser les filtres</button>
+        </aside>
+
+        <section>
+          <div id="activeFilters" class="active-filters"></div>
+          <div id="collectionGrid" class="products-grid"></div>
+        </section>
+      </section>
     </main>
 
     <footer class="site-footer">

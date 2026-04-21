@@ -309,6 +309,7 @@ function renderActiveFilters(filters) {
   if (filters.selectedMetal) chips.push(`Métal: ${metalLabelFr(filters.selectedMetal)}`);
   if (filters.selectedColor) chips.push(`Couleur: ${colorLabelFr(filters.selectedColor)}`);
   if (filters.searchQuery) chips.push(`Recherche: ${filters.searchQuery}`);
+  if (Array.isArray(filters.extraChips)) chips.push(...filters.extraChips);
 
   if (chips.length === 0) {
     const span = document.createElement("span");
@@ -437,55 +438,88 @@ function renderHomePage(allProducts) {
 }
 
 function renderCollectionPage(allProducts) {
-  const typeSelectEl = document.getElementById("typeSelect");
   const metalSelectEl = document.getElementById("metalSelect");
   const colorSelectEl = document.getElementById("colorSelect");
-  const searchInputEl = document.getElementById("searchInput");
+  const inStockOnlyEl = document.getElementById("inStockOnly");
+  const priceMinInputEl = document.getElementById("priceMinInput");
+  const priceMaxInputEl = document.getElementById("priceMaxInput");
   const resetFiltersBtnEl = document.getElementById("resetFiltersBtn");
   const collectionGridEl = document.getElementById("collectionGrid");
-  if (!typeSelectEl || !metalSelectEl || !colorSelectEl || !searchInputEl || !resetFiltersBtnEl || !collectionGridEl) return;
+  if (
+    !metalSelectEl ||
+    !colorSelectEl ||
+    !inStockOnlyEl ||
+    !priceMinInputEl ||
+    !priceMaxInputEl ||
+    !resetFiltersBtnEl ||
+    !collectionGridEl
+  ) {
+    return;
+  }
 
-  fillSelect(typeSelectEl, "Tous les types", [...new Set(allProducts.map((product) => product.type))].sort());
   fillSelect(metalSelectEl, "Tous les métaux", [...new Set(allProducts.flatMap((product) => product.metals))].sort());
   fillSelect(colorSelectEl, "Toutes les couleurs", [...new Set(allProducts.flatMap((product) => product.colors))].sort());
+  const allMinPrice = Math.floor(Math.min(...allProducts.map((product) => minProductPrice(product))));
+  const allMaxPrice = Math.ceil(Math.max(...allProducts.map((product) => minProductPrice(product))));
 
   const params = new URLSearchParams(window.location.search);
-  typeSelectEl.value = params.get("type") || "";
+  const forcedTypeFromNav = params.get("type") || "";
   metalSelectEl.value = params.get("metal") || "";
   colorSelectEl.value = params.get("color") || "";
-  searchInputEl.value = params.get("q") || "";
+  inStockOnlyEl.checked = params.get("inStock") === "1";
+  priceMinInputEl.value = params.get("minPrice") || "0";
+  priceMaxInputEl.value = params.get("maxPrice") || "0";
+  priceMinInputEl.min = String(allMinPrice);
+  priceMinInputEl.max = String(allMaxPrice);
+  priceMaxInputEl.min = String(allMinPrice);
+  priceMaxInputEl.max = String(allMaxPrice);
 
   const render = () => {
-    const selectedType = typeSelectEl.value;
+    const selectedType = forcedTypeFromNav;
     const selectedMetal = metalSelectEl.value;
     const selectedColor = colorSelectEl.value;
-    const searchQuery = searchInputEl.value.trim().toLowerCase();
+    const minPrice = Number.parseFloat(priceMinInputEl.value || String(allMinPrice));
+    const maxPrice = Number.parseFloat(priceMaxInputEl.value || String(allMaxPrice));
+    const inStockOnly = inStockOnlyEl.checked;
+    const isPriceFilterDisabled = minPrice === 0 && maxPrice === 0;
 
     const filtered = allProducts.filter((product) => {
+      const startingPrice = minProductPrice(product);
       const byType = !selectedType || product.type === selectedType;
       const byMetal = !selectedMetal || product.metals.includes(selectedMetal);
       const byColor = !selectedColor || product.colors.includes(selectedColor);
-      const byText =
-        !searchQuery ||
-        product.title.toLowerCase().includes(searchQuery) ||
-        product.handle.toLowerCase().includes(searchQuery) ||
-        product.code.toLowerCase().includes(searchQuery);
-      return byType && byMetal && byColor && byText;
+      const byPrice =
+        isPriceFilterDisabled ||
+        (startingPrice >= Math.min(minPrice, maxPrice) && startingPrice <= Math.max(minPrice, maxPrice));
+      const byStock = !inStockOnly || product.variants.length > 0;
+      return byType && byMetal && byColor && byPrice && byStock;
     });
 
-    renderActiveFilters({ selectedCategory: selectedType, selectedMetal, selectedColor, searchQuery });
+    renderActiveFilters({
+      selectedCategory: selectedType,
+      selectedMetal,
+      selectedColor,
+      extraChips: [
+        inStockOnly ? "Disponibilité: En stock" : "",
+        isPriceFilterDisabled
+          ? "Prix: Tous"
+          : `Prix: ${Math.min(minPrice, maxPrice)} - ${Math.max(minPrice, maxPrice)} EUR`,
+      ].filter(Boolean),
+    });
     renderProducts(filtered, collectionGridEl, true);
   };
 
-  typeSelectEl.addEventListener("change", render);
   metalSelectEl.addEventListener("change", render);
   colorSelectEl.addEventListener("change", render);
-  searchInputEl.addEventListener("input", render);
+  inStockOnlyEl.addEventListener("change", render);
+  priceMinInputEl.addEventListener("input", render);
+  priceMaxInputEl.addEventListener("input", render);
   resetFiltersBtnEl.addEventListener("click", () => {
-    typeSelectEl.value = "";
     metalSelectEl.value = "";
     colorSelectEl.value = "";
-    searchInputEl.value = "";
+    inStockOnlyEl.checked = false;
+    priceMinInputEl.value = "0";
+    priceMaxInputEl.value = "0";
     render();
   });
   render();

@@ -279,16 +279,119 @@ h1 {
 }
 
 .page-head {
-  padding: 20px 0 10px;
+  padding: 24px 0 16px;
+  text-align: center;
 }
 
 .page-head h1 {
-  margin-bottom: 6px;
+  margin: 0;
+  font-family: "Playfair Display", Georgia, serif;
+  font-size: clamp(44px, 7vw, 76px);
+  font-weight: 800;
+  line-height: 1.03;
+  letter-spacing: 0.01em;
+  background: linear-gradient(150deg, #1f1814 0%, #3f2e24 60%, #b38334 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  text-shadow: 0 10px 22px rgba(30, 20, 12, 0.1);
 }
 
 .page-head p {
   color: var(--muted);
   margin: 0;
+}
+
+.collection-layout {
+  display: grid;
+  grid-template-columns: 210px 1fr;
+  gap: 22px;
+  align-items: start;
+}
+
+.advanced-filters {
+  position: sticky;
+  top: 86px;
+  border-right: 1px solid #ddd3c1;
+  padding-right: 14px;
+}
+
+.advanced-filters details {
+  border-bottom: 1px solid #e7decf;
+  padding: 7px 0;
+}
+
+.advanced-filters summary {
+  list-style: none;
+  cursor: pointer;
+  font-size: 13px;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: #4f463d;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 5px 0;
+}
+
+.advanced-filters summary::after {
+  content: "+";
+  font-size: 16px;
+  opacity: 0.9;
+  line-height: 1;
+}
+
+.advanced-filters details[open] summary::after {
+  content: "−";
+}
+
+.advanced-filters input,
+.advanced-filters select {
+  width: 100%;
+  margin-top: 2px;
+  border-radius: 10px;
+  border-color: #cec1ab;
+  background: #fbf8f1;
+}
+
+.filter-body {
+  padding: 8px 0 10px;
+}
+
+.price-fields {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.price-fields label span {
+  display: block;
+  font-size: 11px;
+  color: #7b6d61;
+  margin-top: 8px;
+}
+
+.check-row {
+  margin-top: 2px;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.reset-filters-btn {
+  margin-top: 12px;
+  width: 100%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  border-radius: 999px;
+  border: 1px solid #c5b79f;
+  background: #fff;
+  color: #3f342a;
+  box-shadow: 0 2px 6px rgba(30, 22, 16, 0.08);
 }
 
 .filter-strip {
@@ -726,6 +829,17 @@ select {
   .hero {
     min-height: calc(100vh - 118px);
     padding: 56px 20px;
+  }
+
+  .collection-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .advanced-filters {
+    position: static;
+    border-right: 0;
+    padding-right: 0;
+    margin-bottom: 8px;
   }
 
   .product-layout {
