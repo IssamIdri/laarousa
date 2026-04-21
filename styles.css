@@ -619,6 +619,10 @@ select {
   box-shadow: 0 14px 28px rgba(20, 15, 11, 0.06);
 }
 
+.suggestions-block {
+  margin-top: 30px;
+}
+
 .product-preview {
   min-height: 430px;
   border-radius: 12px;

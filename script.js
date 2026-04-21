@@ -619,13 +619,11 @@ function renderCollectionPage(allProducts) {
     });
 
     const sortedFiltered = [...filtered];
-    if (selectedType === "Earrings") {
-      sortedFiltered.sort((a, b) => {
-        const aHasPhoto = hasProductCatalogPhoto(a) ? 1 : 0;
-        const bHasPhoto = hasProductCatalogPhoto(b) ? 1 : 0;
-        return bHasPhoto - aHasPhoto;
-      });
-    }
+    sortedFiltered.sort((a, b) => {
+      const aHasPhoto = hasProductCatalogPhoto(a) ? 1 : 0;
+      const bHasPhoto = hasProductCatalogPhoto(b) ? 1 : 0;
+      return bHasPhoto - aHasPhoto;
+    });
 
     renderActiveFilters({
       selectedCategory: selectedType,
@@ -659,6 +657,7 @@ function renderCollectionPage(allProducts) {
 
 function renderProductPage(allProducts) {
   const detailsEl = document.getElementById("productDetails");
+  const suggestedGridEl = document.getElementById("suggestedGrid");
   if (!detailsEl) return;
   const params = new URLSearchParams(window.location.search);
   const handle = params.get("handle");
@@ -833,6 +832,18 @@ function renderProductPage(allProducts) {
   });
 
   refresh();
+
+  if (suggestedGridEl) {
+    const suggestions = allProducts
+      .filter((item) => item.handle !== product.handle)
+      .sort((a, b) => {
+        const sameTypeWeight = Number(b.type === product.type) - Number(a.type === product.type);
+        if (sameTypeWeight !== 0) return sameTypeWeight;
+        return minProductPrice(a) - minProductPrice(b);
+      })
+      .slice(0, 4);
+    renderProducts(suggestions, suggestedGridEl, true);
+  }
 }
 
 function renderCartPage() {
