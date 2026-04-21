@@ -389,12 +389,22 @@ function renderProducts(products, targetEl, withActions = true) {
     `;
     if (imagePath && wornImagePath) {
       const visualEl = card.querySelector(".product-visual");
+      let pinnedWorn = false;
+      const applyCardImage = () => {
+        visualEl.style.backgroundImage = `url('${pinnedWorn ? wornImagePath : imagePath}')`;
+      };
       visualEl.classList.add("can-toggle-look");
       visualEl.addEventListener("mouseenter", () => {
         visualEl.style.backgroundImage = `url('${wornImagePath}')`;
       });
       visualEl.addEventListener("mouseleave", () => {
-        visualEl.style.backgroundImage = `url('${imagePath}')`;
+        applyCardImage();
+      });
+      visualEl.addEventListener("click", (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        pinnedWorn = !pinnedWorn;
+        applyCardImage();
       });
     }
     targetEl.appendChild(card);
@@ -697,6 +707,7 @@ function renderProductPage(allProducts) {
   const productPreview = document.getElementById("productPreview");
   let currentBaseImagePath = "";
   let currentWornImagePath = "";
+  let previewPinnedWorn = false;
   let selectedMetal = product.metals.includes("Gold") ? "Gold" : product.metals[0] || "";
   let selectedColor = product.colors[0] || "";
 
@@ -734,6 +745,7 @@ function renderProductPage(allProducts) {
     const wornImagePath = getWornImagePath(product, metal, color);
     currentBaseImagePath = imagePath;
     currentWornImagePath = wornImagePath;
+    previewPinnedWorn = false;
     if (imagePath) {
       productPreview.textContent = "";
       productPreview.style.backgroundImage = `url('${imagePath}')`;
@@ -778,7 +790,13 @@ function renderProductPage(allProducts) {
 
   productPreview.addEventListener("mouseleave", () => {
     if (!currentWornImagePath || !currentBaseImagePath) return;
-    productPreview.style.backgroundImage = `url('${currentBaseImagePath}')`;
+    productPreview.style.backgroundImage = `url('${previewPinnedWorn ? currentWornImagePath : currentBaseImagePath}')`;
+  });
+
+  productPreview.addEventListener("click", () => {
+    if (!currentWornImagePath || !currentBaseImagePath) return;
+    previewPinnedWorn = !previewPinnedWorn;
+    productPreview.style.backgroundImage = `url('${previewPinnedWorn ? currentWornImagePath : currentBaseImagePath}')`;
   });
 
   addToCartBtn.addEventListener("click", () => {
