@@ -1,27 +1,35 @@
 const CSV_PATH = "./assets/csv/products_export_1-2.csv";
 const CART_STORAGE_KEY = "laaroussa_cart_v1";
-const BOUCLES_GOLD_IMAGE_BY_COLOR = {
-  blanche: "blanche.jpeg",
-  "bleu ciel": "bleuciel.jpeg",
-  bleuciel: "bleuciel.jpeg",
-  "bleu nuit": "bleunuit.jpeg",
-  bleunuit: "bleunuit.jpeg",
-  "bleu royal": "bleuroyal.jpeg",
-  bleuroyal: "bleuroyal.jpeg",
-  champagne: "champagne.jpeg",
-  emeraude: "emeraude.jpeg",
-  fuchsia: "fuschia.jpeg",
-  fuschia: "fuschia.jpeg",
-  gold: "gold.jpeg",
-  grenat: "grenat.jpeg",
-  noir: "noir.jpeg",
-  rose: "rose.jpeg",
-  "rose gold": "rosegold.jpeg",
-  rosegold: "rosegold.jpeg",
-  rouge: "rouge.jpeg",
-  "vert lime": "vertlime.jpeg",
-  vertlime: "vertlime.jpeg",
-  violet: "violet.jpeg",
+const BOUCLES_IMAGE_MANIFEST = {
+  "LA-E11": {
+    gold: ["blanche.jpeg"],
+  },
+  "LA-E17": {
+    gold: [
+      "blanche.jpeg",
+      "bleuciel.jpeg",
+      "bleunuit.jpeg",
+      "bleuroyal.jpeg",
+      "champagne.jpeg",
+      "emeraude.jpeg",
+      "fuschia.jpeg",
+      "gold.jpeg",
+      "grenat.jpeg",
+      "noir.jpeg",
+      "rose.jpeg",
+      "rosegold.jpeg",
+      "rouge.jpeg",
+      "vertlime.jpeg",
+      "violet.jpeg",
+    ],
+  },
+  "LA-E2": {
+    gold: ["blanche.jpeg"],
+  },
+  "LA-E3": {
+    gold: ["blanche.jpeg"],
+    silver: ["bleu.jpeg"],
+  },
 };
 
 const METAL_LABEL_FR = {
@@ -342,7 +350,7 @@ function renderProducts(products, targetEl, withActions = true) {
     const firstMetal = product.metals.includes("Gold") ? "Gold" : product.metals[0] || "N/A";
     const query = new URLSearchParams({ handle: product.handle, fromType: product.type }).toString();
     card.href = `./product.html?${query}`;
-    const imagePath = getGoldImagePath(product.handle, firstMetal, firstColor);
+    const imagePath = getVariantImagePath(product, firstMetal, firstColor);
     const visualStyle = imagePath
       ? `background-image:url('${imagePath}'); background-color:#f3f3f3;`
       : `background:${buildCodeGradient(product.code)};`;
@@ -412,13 +420,57 @@ function colorValue(colorName) {
   return map[colorName] || "#c7b5a9";
 }
 
-function getGoldImagePath(handle, metal, color) {
-  if ((handle || "").toLowerCase() !== "la-e11-earrings") return "";
-  if ((metal || "").toLowerCase() !== "gold") return "";
-  const normalized = (color || "").trim().toLowerCase();
-  const filename = BOUCLES_GOLD_IMAGE_BY_COLOR[normalized];
-  if (!filename) return "";
-  return `./assets/images/BOUCLES/${filename}`;
+function getVariantImagePath(product, metal, color) {
+  const productCode = (product?.code || "").trim().toUpperCase();
+  const metalKey = (metal || "").trim().toLowerCase();
+  const productManifest = BOUCLES_IMAGE_MANIFEST[productCode];
+  if (!productManifest || !productManifest[metalKey]) return "";
+
+  const slug = normalizeColorToSlug(color);
+  const candidates = productManifest[metalKey];
+  const matched = candidates.find((filename) => filename.toLowerCase().startsWith(slug));
+  if (!matched) return "";
+
+  return `./assets/images/BOUCLES/${productCode}/${metalKey}/${matched}`;
+}
+
+function normalizeColorToSlug(color) {
+  const base = (color || "").trim().toLowerCase();
+  const dictionary = {
+    blanche: "blanche",
+    white: "blanche",
+    noir: "noir",
+    black: "noir",
+    champagne: "champagne",
+    emeraude: "emeraude",
+    green: "emeraude",
+    fuchsia: "fuschia",
+    fuschia: "fuschia",
+    gold: "gold",
+    grenat: "grenat",
+    bordeaux: "grenat",
+    rose: "rose",
+    pink: "rose",
+    "rose gold": "rosegold",
+    rosegold: "rosegold",
+    rouge: "rouge",
+    red: "rouge",
+    "vert lime": "vertlime",
+    vertlime: "vertlime",
+    violet: "violet",
+    lilla: "violet",
+    "bleu ciel": "bleuciel",
+    bleuciel: "bleuciel",
+    "baby blue": "bleuciel",
+    "bleu nuit": "bleunuit",
+    bleunuit: "bleunuit",
+    "petrol blue": "bleunuit",
+    "bleu royal": "bleuroyal",
+    bleuroyal: "bleuroyal",
+    blue: "bleu",
+    bleu: "bleu",
+  };
+  return dictionary[base] || base.replace(/[^a-z0-9]/g, "");
 }
 
 function metalLabelFr(value) {
@@ -606,7 +658,7 @@ function renderProductPage(allProducts) {
     const variant = product.variants.find((item) => item.metal === metal && item.color === color);
     const code = variant?.sku || product.code;
     const price = variant?.price ?? product.basePrice;
-    const imagePath = getGoldImagePath(product.handle, metal, color);
+    const imagePath = getVariantImagePath(product, metal, color);
     if (imagePath) {
       productPreview.textContent = "";
       productPreview.style.backgroundImage = `url('${imagePath}')`;
@@ -644,7 +696,7 @@ function renderProductPage(allProducts) {
     const variant = product.variants.find((item) => item.metal === metal && item.color === color);
     const code = variant?.sku || product.code;
     const price = variant?.price ?? product.basePrice;
-    const imagePath = getGoldImagePath(product.handle, metal, color);
+    const imagePath = getVariantImagePath(product, metal, color);
     const items = getCartItems();
     const key = `${product.handle}__${metal}__${color}`;
     const existing = items.find((item) => item.key === key);
