@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Laaroussa | Produit</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body data-page="product">
+    <header class="site-header">
+      <a class="brand" href="./index.html">LAAROUSSA</a>
+      <nav class="main-nav">
+        <a href="./index.html" data-nav="home">Accueil</a>
+        <a href="./collection.html" data-nav="collection">Toute la collection</a>
+        <a href="./collection.html?type=Earrings" data-nav="type" data-type="Earrings">Earrings</a>
+        <a href="./collection.html?type=Broche" data-nav="type" data-type="Broche">Broche</a>
+        <a href="./collection.html?type=Colliers" data-nav="type" data-type="Colliers">Colliers</a>
+        <a href="./collection.html?type=BELT" data-nav="type" data-type="BELT">Belt</a>
+        <a href="./collection.html?type=Back accessoires" data-nav="type" data-type="Back accessoires">Back accessoires</a>
+        <a href="./collection.html?type=Crown" data-nav="type" data-type="Crown">Crown</a>
+        <a href="./collection.html?type=Set" data-nav="type" data-type="Set">Sets</a>
+      </nav>
+      <a href="./panier.html" class="cart-link" aria-label="Ouvrir le panier">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M3 4h2l1.2 8.2A2 2 0 0 0 8.2 14h8.7a2 2 0 0 0 2-1.6L20 7H7"></path>
+          <circle cx="9" cy="19" r="1.5"></circle>
+          <circle cx="17" cy="19" r="1.5"></circle>
+        </svg>
+        <span>Panier</span>
+        <strong>0</strong>
+      </a>
+    </header>
+
+    <main class="container">
+      <a id="backToCollection" href="./collection.html" class="text-link">← Retour à la collection</a>
+      <section id="productDetails" class="product-layout"></section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="footer-inner">
+        <div>
+          <h3>Laaroussa</h3>
+          <p>Fiche produit detaillee avec variantes et panier intelligent.</p>
+        </div>
+        <div>
+          <h4>Contact</h4>
+          <p>Email: contact@laaroussa.ma</p>
+          <p>Tel: +212 6 12 34 56 78</p>
+        </div>
+        <div>
+          <h4>Livraison</h4>
+          <p>Expedition 24h/48h selon la ville</p>
+          <p>Paiement a la livraison disponible</p>
+        </div>
+      </div>
+    </footer>
+
+    <script src="./script.js"></script>
+  </body>
+</html>

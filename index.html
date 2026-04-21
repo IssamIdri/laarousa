@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Laaroussa | Accueil</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body data-page="home">
+    <header class="site-header">
+      <a class="brand" href="./index.html">LAAROUSSA</a>
+      <nav class="main-nav">
+        <a href="./index.html" data-nav="home">Accueil</a>
+        <a href="./collection.html" data-nav="collection">Toute la collection</a>
+        <a href="./collection.html?type=Earrings" data-nav="type" data-type="Earrings">Earrings</a>
+        <a href="./collection.html?type=Broche" data-nav="type" data-type="Broche">Broche</a>
+        <a href="./collection.html?type=Colliers" data-nav="type" data-type="Colliers">Colliers</a>
+        <a href="./collection.html?type=BELT" data-nav="type" data-type="BELT">Belt</a>
+        <a href="./collection.html?type=Back accessoires" data-nav="type" data-type="Back accessoires">Back accessoires</a>
+        <a href="./collection.html?type=Crown" data-nav="type" data-type="Crown">Crown</a>
+        <a href="./collection.html?type=Set" data-nav="type" data-type="Set">Sets</a>
+      </nav>
+      <a href="./panier.html" class="cart-link" aria-label="Ouvrir le panier">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M3 4h2l1.2 8.2A2 2 0 0 0 8.2 14h8.7a2 2 0 0 0 2-1.6L20 7H7"></path>
+          <circle cx="9" cy="19" r="1.5"></circle>
+          <circle cx="17" cy="19" r="1.5"></circle>
+        </svg>
+        <span>Panier</span>
+        <strong>0</strong>
+      </a>
+    </header>
+
+    <main class="container">
+      <section class="hero">
+        <div class="hero-orbs" aria-hidden="true">
+          <span></span><span></span><span></span>
+        </div>
+        <svg class="hero-wave" viewBox="0 0 800 120" preserveAspectRatio="none" aria-hidden="true">
+          <path d="M0,35 C120,95 280,0 420,45 C560,95 690,15 800,60 L800,120 L0,120 Z"></path>
+        </svg>
+        <div class="hero-content">
+          <p class="eyebrow">Maison de bijoux marocains</p>
+          <h1>Des bijoux d'exception pour sublimer chaque tenue</h1>
+          <p>
+            Explore une collection raffinée de creations inspirees du savoir-faire marocain.
+            Trouve rapidement la piece ideale selon le style, la couleur et la finition.
+          </p>
+          <div class="hero-actions">
+            <a class="btn btn-primary" href="./collection.html">Voir la collection</a>
+            <a class="btn" href="./collection.html?metal=Gold">Explorer en Gold</a>
+          </div>
+        </div>
+      </section>
+
+      <section class="editorial-grid">
+        <a class="editorial-card" href="./collection.html?type=Colliers">
+          <div class="editorial-media editorial-colliers"></div>
+          <div class="editorial-caption">
+            <h3>Colliers</h3>
+            <p>Des lignes fines et lumineuses pour une allure raffinee.</p>
+          </div>
+        </a>
+        <a class="editorial-card" href="./collection.html?type=Earrings">
+          <div class="editorial-media editorial-earrings"></div>
+          <div class="editorial-caption">
+            <h3>Earrings</h3>
+            <p>Des boucles iconiques, entre tradition et elegance moderne.</p>
+          </div>
+        </a>
+        <a class="editorial-card" href="./collection.html?type=Crown">
+          <div class="editorial-media editorial-crown"></div>
+          <div class="editorial-caption">
+            <h3>Crown</h3>
+            <p>Pieces statement pour les grands moments.</p>
+          </div>
+        </a>
+      </section>
+
+      <section class="why-us">
+        <div class="why-us-media"></div>
+        <div class="why-us-content">
+          <p class="eyebrow">Pourquoi nous</p>
+          <h2 class="section-title">Une experience bijou pensee pour vous</h2>
+          <p>
+            Nos creations allient elegance marocaine, finitions soignees et confort au quotidien.
+            Chaque piece est selectionnee pour offrir style, qualite et confiance, de la commande a
+            la livraison.
+          </p>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="footer-inner">
+        <div>
+          <h3>Laaroussa</h3>
+          <p>Bijoux marocains avec style premium et livraison partout au Maroc.</p>
+        </div>
+        <div>
+          <h4>Contact</h4>
+          <p>Email: contact@laaroussa.ma</p>
+          <p>Tel: +212 6 12 34 56 78</p>
+        </div>
+        <div>
+          <h4>Livraison</h4>
+          <p>Expedition 24h/48h selon la ville</p>
+          <p>Paiement a la livraison disponible</p>
+        </div>
+      </div>
+    </footer>
+
+    <script src="./script.js"></script>
+  </body>
+</html>
