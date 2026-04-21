@@ -553,11 +553,14 @@ function colorLabelFr(value) {
 }
 
 function renderHomePage(allProducts) {
-  const featured = document.getElementById("featuredGrid");
-  if (!featured) return;
+  const homeSuggestionsEl = document.getElementById("homeSuggestionsGrid");
+  if (!homeSuggestionsEl) return;
 
-  const products = allProducts.slice(0, 8);
-  renderProducts(products, featured, false);
+  const suggestions = allProducts
+    .filter((product) => hasProductCatalogPhoto(product))
+    .slice(0, 4);
+
+  renderProducts(suggestions, homeSuggestionsEl, false);
 }
 
 function renderCollectionPage(allProducts) {
