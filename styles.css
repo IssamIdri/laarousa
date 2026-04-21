@@ -72,6 +72,13 @@ a {
   border-bottom: 2px solid transparent;
 }
 
+.main-nav a:active,
+.cart-link:active,
+.btn:active,
+.product-card:active {
+  opacity: 0.9;
+}
+
 .main-nav a:hover,
 .main-nav a.is-active {
   border-color: #b79a4c;
@@ -131,7 +138,9 @@ a {
 .hero-content {
   position: relative;
   z-index: 2;
-  width: min(760px, 100%);
+  width: min(860px, 100%);
+  margin: 0 auto;
+  text-align: center;
 }
 
 .eyebrow {
@@ -151,9 +160,11 @@ h1 {
 
 .hero p {
   color: var(--muted);
-  max-width: 680px;
+  max-width: 760px;
   font-size: 17px;
   line-height: 1.55;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .hero-actions {
@@ -161,6 +172,7 @@ h1 {
   flex-wrap: wrap;
   gap: 10px;
   margin-top: 16px;
+  justify-content: center;
 }
 
 .hero-orbs {
@@ -226,12 +238,24 @@ h1 {
   font-weight: 600;
   background: #fff;
   cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+  box-shadow: 0 4px 12px rgba(25, 18, 11, 0.1);
 }
 
 .btn-primary {
-  background: var(--primary);
+  background: linear-gradient(140deg, #f2d47f, #c89e2f);
   color: var(--primary-text);
-  border-color: #c49f37;
+  border-color: #be9227;
+  box-shadow: 0 6px 16px rgba(171, 126, 25, 0.32);
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 18px rgba(25, 18, 11, 0.16);
+}
+
+.btn:active {
+  transform: translateY(0);
 }
 
 .stats-grid {
@@ -449,6 +473,7 @@ select {
   border-radius: 16px;
   overflow: hidden;
   transition: transform 0.18s ease, box-shadow 0.18s ease;
+  position: relative;
 }
 
 .product-card:hover {
@@ -471,9 +496,32 @@ select {
   background-repeat: no-repeat;
 }
 
+.product-visual-wrap {
+  position: relative;
+  background: #f2efea;
+}
+
+.product-badge {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 2;
+  background: #7a0f0f;
+  color: #fff;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 4px 8px;
+  border-radius: 3px;
+}
+
 .product-visual.has-photo {
   background-size: contain;
   background-color: #f3f3f3;
+}
+
+.product-visual.can-toggle-look {
+  cursor: pointer;
 }
 
 .product-card:hover .product-visual {
@@ -502,7 +550,7 @@ select {
 .product-title {
   margin: 8px 0 3px;
   font-family: Georgia, serif;
-  font-size: 22px;
+  font-size: 20px;
 }
 
 .price {
@@ -514,6 +562,37 @@ select {
 .meta {
   color: var(--muted);
   font-size: 13px;
+  margin-top: 8px;
+}
+
+.mini-swatches {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.mini-swatch {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 1px solid rgba(20, 16, 10, 0.2);
+  display: inline-block;
+}
+
+.product-cta {
+  margin: 10px 0 0;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #7d6331;
+  font-weight: 700;
+  opacity: 0.9;
+  transition: transform 0.18s ease;
+}
+
+.product-card:hover .product-cta {
+  transform: translateX(4px);
 }
 
 .actions {
@@ -549,6 +628,10 @@ select {
   box-shadow: inset 0 0 0 1px #ebe3d5, 0 10px 24px rgba(40, 28, 16, 0.08);
 }
 
+.product-preview.can-toggle-look {
+  cursor: pointer;
+}
+
 .selection-box {
   border: 1px solid #e6dcca;
   border-radius: 10px;
@@ -580,8 +663,8 @@ select {
 }
 
 .swatch {
-  width: 30px;
-  height: 30px;
+  width: 34px;
+  height: 34px;
   border-radius: 50%;
   border: 2px solid #fff;
   outline: 1px solid #cfc2ae;
@@ -655,7 +738,7 @@ select {
   min-height: 300px;
   background:
     linear-gradient(130deg, rgba(20, 15, 11, 0.16), rgba(20, 15, 11, 0.06)),
-    url("./assets/images/BOUCLES/emeraude.jpeg") center/cover no-repeat;
+    url("./assets/images/BOUCLES/LA-E17/gold/emeraude.jpeg") center/cover no-repeat;
 }
 
 .why-us-content {
@@ -690,13 +773,13 @@ select {
 .editorial-earrings {
   background-image:
     linear-gradient(130deg, rgba(10, 8, 7, 0.25), rgba(10, 8, 7, 0.05)),
-    url("./assets/images/BOUCLES/rouge.jpeg");
+    url("./assets/images/BOUCLES/LA-E17/gold/rouge.jpeg");
 }
 
 .editorial-crown {
   background-image:
     linear-gradient(130deg, rgba(10, 8, 7, 0.25), rgba(10, 8, 7, 0.05)),
-    url("./assets/images/BOUCLES/violet.jpeg");
+    url("./assets/images/BOUCLES/LA-E17/gold/violet.jpeg");
 }
 
 .editorial-caption {
@@ -818,17 +901,54 @@ select {
 
 @media (max-width: 960px) {
   .site-header {
-    align-items: flex-start;
+    align-items: stretch;
     flex-direction: column;
+    gap: 10px;
+    padding: 10px 12px;
   }
 
   .main-nav {
     width: 100%;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    white-space: nowrap;
+    padding-bottom: 2px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .main-nav::-webkit-scrollbar {
+    display: none;
+  }
+
+  .main-nav a {
+    display: inline-block;
+    padding: 10px 6px;
+    min-height: 44px;
   }
 
   .hero {
     min-height: calc(100vh - 118px);
     padding: 56px 20px;
+  }
+
+  .hero-content {
+    width: 100%;
+  }
+
+  .hero-actions {
+    width: 100%;
+    gap: 10px;
+  }
+
+  .hero-actions .btn {
+    flex: 1 1 100%;
+    min-height: 46px;
+  }
+
+  .cart-link {
+    align-self: flex-end;
+    min-height: 44px;
   }
 
   .collection-layout {
@@ -862,6 +982,33 @@ select {
     grid-template-columns: 1fr;
   }
 
+  .advanced-filters summary {
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+  }
+
+  .advanced-filters input,
+  .advanced-filters select,
+  .btn,
+  .reset-filters-btn {
+    min-height: 44px;
+    font-size: 16px;
+  }
+
+  .swatches {
+    gap: 10px;
+  }
+
+  .swatch {
+    width: 38px;
+    height: 38px;
+  }
+
+  .add-to-cart-btn {
+    min-height: 48px;
+  }
+
   .footer-inner {
     flex-direction: column;
   }
@@ -870,4 +1017,12 @@ select {
 body[data-page="home"] .container {
   width: 100%;
   margin: 0;
+}
+
+body[data-page="home"] .hero h1 {
+  background: linear-gradient(145deg, #ffe8ab 0%, #f3cb63 40%, #b9851d 75%, #fff2ca 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  text-shadow: 0 10px 24px rgba(78, 52, 10, 0.25);
 }

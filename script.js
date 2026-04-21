@@ -2,13 +2,14 @@ const CSV_PATH = "./assets/csv/products_export_1-2.csv";
 const CART_STORAGE_KEY = "laaroussa_cart_v1";
 const BOUCLES_IMAGE_MANIFEST = {
   "LA-E11": {
-    gold: ["blanche.jpeg"],
+    gold: ["blanche.jpeg", "blanche_face.png"],
   },
   "LA-E17": {
     gold: [
       "blanche.jpeg",
       "bleuciel.jpeg",
       "bleunuit.jpeg",
+      "bleunuit_face.jpeg",
       "bleuroyal.jpeg",
       "champagne.jpeg",
       "emeraude.jpeg",
@@ -24,10 +25,10 @@ const BOUCLES_IMAGE_MANIFEST = {
     ],
   },
   "LA-E2": {
-    gold: ["blanche.jpeg"],
+    gold: ["blanche.jpeg", "blanche_face.png"],
   },
   "LA-E3": {
-    gold: ["blanche.jpeg"],
+    gold: ["blanche.jpeg", "blanche_face.png"],
     silver: ["bleu.jpeg"],
   },
 };
@@ -218,10 +219,21 @@ function buildProducts(csvRows) {
   return [...map.values()]
     .map((product) => {
       const metals = [...new Set(product.variants.map((variant) => variant.metal))];
-      const colors = [...new Set(product.variants.map((variant) => variant.color))];
+      const colors = prioritizeProductColors(
+        product.code,
+        [...new Set(product.variants.map((variant) => variant.color))]
+      );
       return { ...product, metals, colors };
     })
     .sort((a, b) => a.title.localeCompare(b.title));
+}
+
+function prioritizeProductColors(productCode, colors) {
+  if ((productCode || "").toUpperCase() !== "LA-E17") return colors;
+  const preferred = ["Bleu Nuit"];
+  const first = colors.filter((color) => preferred.includes(color));
+  const rest = colors.filter((color) => !preferred.includes(color));
+  return [...first, ...rest];
 }
 
 function extractCode(title) {
@@ -341,29 +353,50 @@ function renderProducts(products, targetEl, withActions = true) {
     return;
   }
 
-  products.forEach((product) => {
+  products.forEach((product, index) => {
     const card = document.createElement("a");
     card.className = "product-card";
     const type = product.type || "Other";
     const price = formatPrice(minProductPrice(product));
     const firstColor = product.colors[0] || "N/A";
     const firstMetal = product.metals.includes("Gold") ? "Gold" : product.metals[0] || "N/A";
+    const bestSeller = index % 5 === 0;
     const query = new URLSearchParams({ handle: product.handle, fromType: product.type }).toString();
     card.href = `./product.html?${query}`;
     const imagePath = getVariantImagePath(product, firstMetal, firstColor);
+    const wornImagePath = getWornImagePath(product, firstMetal, firstColor);
     const visualStyle = imagePath
       ? `background-image:url('${imagePath}'); background-color:#f3f3f3;`
       : `background:${buildCodeGradient(product.code)};`;
     const visualText = imagePath ? "" : product.code;
+    const swatches = product.colors
+      .slice(0, 6)
+      .map((color) => `<span class="mini-swatch" style="background:${colorValue(color)}" title="${colorLabelFr(color)}"></span>`)
+      .join("");
     card.innerHTML = `
-      <div class="product-visual${imagePath ? " has-photo" : ""}" style="${visualStyle}">${visualText}</div>
+      <div class="product-visual-wrap">
+        ${bestSeller ? '<span class="product-badge">Best seller</span>' : ""}
+        <div class="product-visual${imagePath ? " has-photo" : ""}" style="${visualStyle}">${visualText}</div>
+      </div>
       <div class="product-body">
         <div class="chips"><span class="chip">${type}</span><span class="chip">${product.metals.map(metalLabelFr).join(" / ")}</span></div>
         <h3 class="product-title">${product.title}</h3>
         <p class="price">${price}</p>
+        <div class="mini-swatches">${swatches}</div>
         <p class="meta">Couleur principale: ${colorLabelFr(firstColor)} · Métal: ${metalLabelFr(firstMetal)}</p>
+        <p class="product-cta">Voir le produit</p>
       </div>
     `;
+    if (imagePath && wornImagePath) {
+      const visualEl = card.querySelector(".product-visual");
+      visualEl.classList.add("can-toggle-look");
+      visualEl.addEventListener("mouseenter", () => {
+        visualEl.style.backgroundImage = `url('${wornImagePath}')`;
+      });
+      visualEl.addEventListener("mouseleave", () => {
+        visualEl.style.backgroundImage = `url('${imagePath}')`;
+      });
+    }
     targetEl.appendChild(card);
   });
 }
@@ -432,6 +465,34 @@ function getVariantImagePath(product, metal, color) {
   if (!matched) return "";
 
   return `./assets/images/BOUCLES/${productCode}/${metalKey}/${matched}`;
+}
+
+function getWornImagePath(product, metal, color) {
+  const productCode = (product?.code || "").trim().toUpperCase();
+  const metalKey = (metal || "").trim().toLowerCase();
+  const colorSlug = normalizeColorToSlug(color);
+  const productManifest = BOUCLES_IMAGE_MANIFEST[productCode];
+  if (!productManifest || !productManifest[metalKey]) return "";
+
+  const candidates = productManifest[metalKey];
+  const matched = candidates.find((filename) => {
+    const lower = filename.toLowerCase();
+    return lower.startsWith(`${colorSlug}_face.`);
+  });
+  if (matched) {
+    return `./assets/images/BOUCLES/${productCode}/${metalKey}/${matched}`;
+  }
+  return "";
+}
+
+function hasProductCatalogPhoto(product) {
+  const productCode = (product?.code || "").trim().toUpperCase();
+  const productManifest = BOUCLES_IMAGE_MANIFEST[productCode];
+  if (!productManifest) return false;
+
+  return Object.values(productManifest).some((files) =>
+    files.some((filename) => !filename.toLowerCase().includes("_face"))
+  );
 }
 
 function normalizeColorToSlug(color) {
@@ -547,6 +608,15 @@ function renderCollectionPage(allProducts) {
       return byType && byMetal && byColor && byPrice && byStock;
     });
 
+    const sortedFiltered = [...filtered];
+    if (selectedType === "Earrings") {
+      sortedFiltered.sort((a, b) => {
+        const aHasPhoto = hasProductCatalogPhoto(a) ? 1 : 0;
+        const bHasPhoto = hasProductCatalogPhoto(b) ? 1 : 0;
+        return bHasPhoto - aHasPhoto;
+      });
+    }
+
     renderActiveFilters({
       selectedCategory: selectedType,
       selectedMetal,
@@ -558,7 +628,7 @@ function renderCollectionPage(allProducts) {
           : `Prix: ${Math.min(minPrice, maxPrice)} - ${Math.max(minPrice, maxPrice)} EUR`,
       ].filter(Boolean),
     });
-    renderProducts(filtered, collectionGridEl, true);
+    renderProducts(sortedFiltered, collectionGridEl, true);
   };
 
   metalSelectEl.addEventListener("change", render);
@@ -625,6 +695,8 @@ function renderProductPage(allProducts) {
   const variantExtra = document.getElementById("variantExtra");
   const addToCartBtn = document.getElementById("addToCartBtn");
   const productPreview = document.getElementById("productPreview");
+  let currentBaseImagePath = "";
+  let currentWornImagePath = "";
   let selectedMetal = product.metals.includes("Gold") ? "Gold" : product.metals[0] || "";
   let selectedColor = product.colors[0] || "";
 
@@ -659,6 +731,9 @@ function renderProductPage(allProducts) {
     const code = variant?.sku || product.code;
     const price = variant?.price ?? product.basePrice;
     const imagePath = getVariantImagePath(product, metal, color);
+    const wornImagePath = getWornImagePath(product, metal, color);
+    currentBaseImagePath = imagePath;
+    currentWornImagePath = wornImagePath;
     if (imagePath) {
       productPreview.textContent = "";
       productPreview.style.backgroundImage = `url('${imagePath}')`;
@@ -666,13 +741,19 @@ function renderProductPage(allProducts) {
       productPreview.style.backgroundPosition = "center";
       productPreview.style.backgroundRepeat = "no-repeat";
       productPreview.style.backgroundColor = "#f3f3f3";
+      productPreview.classList.toggle("can-toggle-look", Boolean(wornImagePath));
+      productPreview.title = wornImagePath ? "Cliquer pour voir la photo portée" : "";
     } else {
       productPreview.textContent = code;
       productPreview.style.backgroundImage = "";
       productPreview.style.background = `linear-gradient(140deg, ${metal === "Gold" ? "#cba34a" : "#b3bdc9"}, ${colorValue(color)})`;
+      productPreview.classList.remove("can-toggle-look");
+      productPreview.title = "";
     }
     selectionBox.textContent = `Sélection: ${metalLabelFr(metal || "N/A")} / ${colorLabelFr(color || "N/A")} · ${formatPrice(price)}`;
-    variantExtra.textContent = `Référence: ${code} · Finition: ${metalLabelFr(metal)} · Teinte: ${colorLabelFr(color)}`;
+    variantExtra.textContent =
+      `Référence: ${code} · Finition: ${metalLabelFr(metal)} · Teinte: ${colorLabelFr(color)}` +
+      (wornImagePath ? " · Cliquez sur l'image pour voir la version portée" : "");
     updateActiveButtons();
   };
 
@@ -688,6 +769,16 @@ function renderProductPage(allProducts) {
     if (!button) return;
     selectedColor = button.dataset.color || selectedColor;
     refresh();
+  });
+
+  productPreview.addEventListener("mouseenter", () => {
+    if (!currentWornImagePath || !currentBaseImagePath) return;
+    productPreview.style.backgroundImage = `url('${currentWornImagePath}')`;
+  });
+
+  productPreview.addEventListener("mouseleave", () => {
+    if (!currentWornImagePath || !currentBaseImagePath) return;
+    productPreview.style.backgroundImage = `url('${currentBaseImagePath}')`;
   });
 
   addToCartBtn.addEventListener("click", () => {
